@@ -134,7 +134,7 @@
   margin-top: 20px;
   font-size: 20px;
   cursor: pointer;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-weight: 800;
 }
 
@@ -259,7 +259,7 @@
 
 /* 1.6. contact IMG BACKGROUND */
 .contact-bg {
-  background-image: url(../img/contact/contact-bg.jpg);
+  background-image: url(../img/contact/contact-bg.png);
 }
 
 
@@ -511,7 +511,7 @@ html {
 
 /* 3. layout */
 body {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 15px;
   line-height: 1.5;
   font-style: normal;
@@ -741,7 +741,7 @@ strong {
 }
 
 .section-title-subheading.section-title-subheading-home {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 15px;
   font-style: normal;
   font-weight: 700;
@@ -766,7 +766,7 @@ strong {
 }
 
 .section-title-subheading {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 15px;
   font-style: normal;
   font-weight: 700;
@@ -793,7 +793,7 @@ strong {
 .section-title-heading.section-title-heading-home {
   position: absolute;
   top: 3px;
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 120px;
   font-weight: 900;
   text-transform: uppercase;
@@ -818,7 +818,7 @@ strong {
 .section-title-heading {
   position: absolute;
   top: 3px;
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 120px;
   font-weight: 900;
   text-transform: uppercase;
@@ -843,7 +843,7 @@ strong {
 
 /* 4.2. section heading */
 h2.section-subheading {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 13px;
   font-style: normal;
   font-weight: 600;
@@ -914,7 +914,7 @@ h2.section-subheading-light span:before {
 }
 
 .section-heading {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 45px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1094,11 +1094,11 @@ h2.section-subheading-light span:before {
 
 #menu-mobile {
   position: fixed;
-  font-family: 'open sans';
-  font-size: 40px;
+  font-family: "termina", sans-serif;
+  font-size: 30px;
   font-style: normal;
   text-transform: uppercase;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 1px;
   line-height: 2.25;
   width: 390px;
@@ -1155,7 +1155,7 @@ h2.section-subheading-light span:before {
   right: 0;
   margin-left: auto;
   margin-right: auto;
-  padding-left: 61px;
+  padding-left: ;
   text-align: left;
   list-style: none outside none;
 }
@@ -2373,7 +2373,7 @@ form {
   padding: 5px 5px;
   background: none;
   margin: 10px 0 10px 0;
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 13px;
   line-height: 1.5;
   font-style: normal;
@@ -2398,7 +2398,7 @@ textarea {
   padding: 5px 5px;
   background: none;
   margin: 5px;
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 13px;
   line-height: 1.5;
   font-style: normal;
@@ -2442,7 +2442,7 @@ textarea {
 }
 
 .success {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 10px;
   font-style: normal;
   font-weight: 600;
@@ -3209,7 +3209,7 @@ a:focus.link-underline.link-underline-dark {
 
 /* 19. Magnific Popup v1.1.0 CUSTOM */
 .mfp-arrow-left:after {
-  font-family: "open sans";
+  font-family: "termina", sans-serif;
   content: "\f124";
   font-size: 18px;
   color: #fff;
@@ -3217,7 +3217,7 @@ a:focus.link-underline.link-underline-dark {
 }
 
 .mfp-arrow-right:after {
-  font-family: "open sans";
+  font-family: "termina", sans-serif;
   content: "\f125";
   font-size: 18px;
   color: #fff;
@@ -3240,7 +3240,7 @@ a:focus.link-underline.link-underline-dark {
 }
 
 .mfp-title {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 13px;
   line-height: 1.5;
   font-style: normal;
@@ -3468,7 +3468,7 @@ button {
 
 .description h3,
 .description h4 {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 15px;
   text-transform: uppercase;
   font-weight: 700;
@@ -3591,7 +3591,7 @@ button {
 .section-title-heading.section-title-heading-home {
   position: absolute;
   top: 3px;
-  font-family: 'open sans', ;
+  font-family: "termina", sans-serif;
   font-size: 80px;
   font-weight: 900;
   text-transform: uppercase;
@@ -3632,7 +3632,7 @@ button {
 .section-title-heading {
   position: absolute;
   top: 3px;
-  font-family: 'open sans', ;
+  font-family: "termina", sans-serif;
   font-size: 80px;
   font-weight: 900;
   text-transform: uppercase;
@@ -3662,7 +3662,7 @@ button {
 }
 
 .section-heading {
-  font-family: 'open sans', ;
+  font-family: "termina", sans-serif;
   font-size: 55px;
   font-weight: 700;
   text-transform: uppercase;
@@ -3938,7 +3938,7 @@ height: 100vh;
 }
 
 .facts-counter-number {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 25px;
   font-weight: 600;
   text-transform: uppercase;
@@ -4157,7 +4157,7 @@ height: 100vh;
 
 .timeline .swiper-slide .timeline-year {
   display: block;
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 30px;
   line-height: 1;
   font-style: normal;
@@ -4190,7 +4190,7 @@ height: 100vh;
 }
 
 .timeline .swiper-slide .timeline-title {
-  font-family: 'open sans', ;
+  font-family: "termina", sans-serif;
   font-size: 80px;
   line-height: 1;
   font-style: normal;
@@ -4305,7 +4305,7 @@ height: 100vh;
 }
 
 .timeline .swiper-pagination {
-  font-family: 'open sans', sans-serif;
+  font-family: "termina", sans-serif;
   font-size: 15px;
   line-height: normal;
   font-style: italic;
@@ -4645,7 +4645,7 @@ height: 100vh;
 .mistify__slide-title {
   position: absolute;
   top: 3px;
-  font-family: 'open sans', ;
+  font-family: "termina", sans-serif;
   font-size: 80px;
   font-weight: 900;
   text-transform: uppercase;

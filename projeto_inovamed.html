@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Production Co. - Projeto Innovamed</title>
+    <style>
+        /* Basic Reset & Modern Defaults */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            line-height: 1.6;
+            /* Add padding top to prevent content from being obscured by fixed header */
+            padding-top: 70px; /* Adjust as needed, matches videoclipespng.html */
+        }
+
+        /* --- START: COPIED HEADER STYLES from index.html --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 12px;
+            box-sizing: border-box;
+            z-index: 100; /* Ensure header is above page content, but below modal */
+            pointer-events: all;
+            background-color: rgba(0, 0, 0, 1.0); /* Black */
+        }
+
+        .logo-link {
+            display: block;
+            line-height: 0;
+        }
+
+        .logo {
+            max-height: 30px;
+            width: auto;
+            display: block;
+        }
+
+        .menu {
+            display: flex;
+            gap: 22px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu a {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 11px 13px;
+            font-size: 1.05em;
+            transition: background-color 0.8s, border-radius 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #555;
+            color: #FFFFFF;
+            border-radius: 10px;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .menu-toggle div {
+            width: 28px;
+            height: 3.5px;
+            background-color: #FFFFFF;
+            margin: 4.5px 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        /* Responsive Styles for header */
+        @media (max-width: 768px) {
+             header {
+                 padding: 18px 10px;
+             }
+             .logo {
+                 max-height: 25px;
+             }
+            .menu {
+                background-color: #000000;
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 100%; /* Positioned relative to header height */
+                left: 0;
+                padding-top: 10px;
+                padding-bottom: 15px;
+                align-items: center;
+                z-index: 99; /* Below header's z-index but above content if needed */
+            }
+             .menu a {
+                 padding: 14px;
+                 width: 80%;
+                 text-align: center;
+                 color: #FFFFFF;
+             }
+             .menu a:hover {
+                 background-color: #555;
+             }
+            .menu-toggle {
+                display: flex;
+            }
+            .menu.active {
+                display: flex;
+            }
+            .menu-toggle.active div:nth-child(1) {
+                 transform: rotate(45deg) translate(7px, 7px);
+            }
+            .menu-toggle.active div:nth-child(2) {
+                opacity: 0;
+            }
+            .menu-toggle.active div:nth-child(3) {
+                 transform: rotate(-45deg) translate(7px, -7px);
+            }
+             body { /* Adjust body padding for smaller header on mobile */
+                padding-top: 61px; /* Adjust as needed, matches videoclipespng.html */
+            }
+        }
+        /* --- END: COPIED HEADER STYLES --- */
+
+
+        /* Play Button SVG Styling Helper */
+        .play-icon-svg {
+            width: 50%; /* Adjust size relative to its container */
+            height: 50%;
+            fill: #ffffff; /* Default white icon */
+            transition: fill 0.2s ease-out;
+        }
+
+        /* Main Video Thumbnail Section */
+        .main-video-thumbnail-section {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            background-image: url('img/inovac2v2.webp'); /* UPDATED TO WEBP */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .video-text-overlay {
+            width: auto;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 60%, rgba(0, 0, 0, 0) 100%);
+            padding: 30px 40px;
+            color: #ffffff;
+            text-align: left;
+            align-self: stretch;
+        }
+        
+        /* Styling for the two-part title in the main hero */
+        .video-text-overlay .title-line-1 {
+            font-size: 1.8rem; 
+            font-weight: normal; 
+            margin-bottom: -0.2em; 
+            display: block;
+             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
+        }
+
+        .video-text-overlay h1 { 
+            font-size: 2.8rem; 
+            line-height: 1.1;
+            margin-bottom: 0.4rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+
+        .video-text-overlay p {
+            font-size: 1rem;
+            max-width: 600px; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            margin-bottom: 10px;
+        }
+
+        /* Common styling for play button containers */
+        .play-button-container {
+            background-color: rgba(0,0,0,0.45); 
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.2s ease-out, transform 0.2s ease-out;
+        }
+
+        .play-button-hero { /* For main hero */
+            width: 60px;
+            height: 60px;
+            margin-top: 10px;
+        }
+        .main-video-thumbnail-section:hover .play-button-hero {
+            transform: scale(1.1);
+            background-color: #ffffff;
+        }
+        .main-video-thumbnail-section:hover .play-button-hero .play-icon-svg {
+            fill: #000000;
+        }
+
+
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000; /* Higher than header */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-modal-content {
+            position: relative;
+            margin: auto;
+            padding: 0;
+            width: 90%;
+            max-width: 1024px;
+            background-color: #000;
+        }
+
+        .video-modal .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-modal .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .close-modal-button {
+            position: absolute;
+            top: -40px;
+            right: -10px;
+            color: #aaa;
+            font-size: 35px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            z-index: 1001; /* Higher than modal content */
+        }
+
+        .close-modal-button:hover,
+        .close-modal-button:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+
+        /* Video Grid Section */
+        .video-grid-section {
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .video-grid-section h2 { 
+            font-size: 2.2rem; 
+            margin-bottom: 40px;
+            color: #ffffff;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        @media (min-width: 801px) {
+            .video-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 800px) {
+             .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-item {
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-item-thumbnail-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio for thumbnail image */
+            height: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        .video-item-thumbnail-container img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .video-item:hover .video-item-thumbnail-container img {
+            transform: scale(1.07);
+        }
+
+        .play-button-grid { /* For grid items */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            z-index: 1;
+            transition: background-color 0.2s ease-out, transform 0.2s ease-out;
+        }
+        .video-item:hover .play-button-grid {
+            background-color: #ffffff;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        .video-item:hover .play-button-grid .play-icon-svg {
+            fill: #000000;
+        }
+
+
+        .video-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .video-text-overlay .title-line-1 {
+                font-size: 1.6rem;
+            }
+            .video-text-overlay h1 {
+                font-size: 2.4rem;
+            }
+            .video-text-overlay p {
+                font-size: 0.9rem;
+            }
+            .video-modal-content {
+                width: 95%;
+                max-width: 800px;
+            }
+            .close-modal-button {
+                top: -35px;
+                right: 0px;
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 800px) { /* Matched 768px breakpoint for header consistency */
+            .main-video-thumbnail-section {
+                height: 60vh;
+            }
+            .video-text-overlay {
+                padding: 25px 30px;
+            }
+            .video-text-overlay .title-line-1 {
+                font-size: 1.4rem;
+            }
+            .video-text-overlay h1 {
+                font-size: 2.2rem;
+            }
+            .video-text-overlay p {
+                font-size: 0.85rem;
+            }
+            .play-button-hero {
+                width: 55px;
+                height: 55px;
+            }
+            .video-grid-section h2 {
+                font-size: 2rem;
+            }
+            .video-modal-content {
+                width: 100%;
+                height: auto;
+                margin: auto 5px;
+                max-width: none;
+            }
+            .close-modal-button {
+                top: 10px;
+                right: 10px;
+                color: #fff;
+                background-color: rgba(0,0,0,0.5);
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                display:flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+            }
+            .play-button-grid {
+                width: 60px;
+                height: 60px;
+            }
+            .play-icon-svg {
+                width: 45%;
+                height: 45%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-video-thumbnail-section {
+                height: 55vh;
+            }
+            .video-text-overlay {
+                padding: 20px;
+            }
+            .video-text-overlay .title-line-1 {
+                font-size: 1.2rem;
+            }
+            .video-text-overlay h1 {
+                font-size: 2rem;
+            }
+            .play-button-hero, .play-button-grid {
+                width: 50px;
+                height: 50px;
+            }
+            .play-icon-svg {
+                width: 40%;
+                height: 40%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- START: COPIED HEADER HTML from index.html -->
+    <header>
+        <a href="index.html" class="logo-link"> <!-- Point to index.html for home -->
+            <img src="img/logo.webp" alt="VFinal Filmes Logo" class="logo">
+        </a>
+        <nav class="menu">
+            <li><a href="index.html#home">Home</a></li>
+            <li><a href="index.html#about">Sobre</a></li>
+            <li><a href="index.html#portfolio">Portfólio</a></li>
+            <li><a href="index.html#contato">Contato</a></li>
+        </nav>
+        <div class="menu-toggle" id="menu-toggle">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </header>
+    <!-- END: COPIED HEADER HTML -->
+
+    <main>
+        <!-- Main Video Thumbnail Section -->
+        <section class="main-video-thumbnail-section modal-trigger" data-video-id="XXJMI027q9M">
+            <div class="video-text-overlay">
+                <span class="title-line-1">Projeto</span>
+                <h1>Innovamed Experience</h1>
+                <p>Com vídeos gravados no no hospital InCor, mostramos como o projeto levou a tecnologia da Realidade Virtual para mostrar aos pacientes como é o funcionamento do coração humano.</p>
+                <div class="play-button-container play-button-hero" aria-label="Play Projeto Innovamed Experience Video">
+                    <svg class="play-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M8 5v14l11-7z"></path>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Modal -->
+        <div id="videoModal" class="video-modal">
+            <div class="video-modal-content">
+                <button class="close-modal-button" id="closeModalButton" aria-label="Close video player">×</button>
+                <div class="video-wrapper">
+                    <iframe id="modalVideoIframe"
+                            src=""
+                            title="Video player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Grid Section -->
+        <section class="video-grid-section">
+            <h2>Mais vídeos do projeto</h2>
+            <div class="video-grid">
+                <!-- Video Item 1 -->
+                <div class="video-item modal-trigger" data-video-id="riNHc_FIu6E">
+                    <div class="video-item-thumbnail-container">
+                        <img src="img/inovac2v1.webp" alt="Vídeo do projeto Innovamed Experience 1"> <!-- UPDATED TO WEBP -->
+                        <div class="play-button-container play-button-grid" aria-label="Play Video 1">
+                            <svg class="play-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M8 5v14l11-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Video Item 2 -->
+                <div class="video-item modal-trigger" data-video-id="ahQYUSkBDig">
+                     <div class="video-item-thumbnail-container">
+                        <img src="img/inovac1v1.webp" alt="Vídeo do projeto Innovamed Experience 2"> <!-- UPDATED TO WEBP -->
+                        <div class="play-button-container play-button-grid" aria-label="Play Video 2">
+                            <svg class="play-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M8 5v14l11-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Video Item 3 -->
+                <div class="video-item modal-trigger" data-video-id="PxxwoFexU5Q">
+                     <div class="video-item-thumbnail-container">
+                        <img src="img/inovac1v2.webp" alt="Vídeo do projeto Innovamed Experience 3"> <!-- UPDATED TO WEBP -->
+                        <div class="play-button-container play-button-grid" aria-label="Play Video 3">
+                           <svg class="play-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M8 5v14l11-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <!-- Video Item 4 -->
+                <div class="video-item modal-trigger" data-video-id="Rp7PEIvxECc">
+                     <div class="video-item-thumbnail-container">
+                        <img src="img/inovac1v3.webp" alt="Vídeo do projeto Innovamed Experience 4"> <!-- UPDATED TO WEBP -->
+                        <div class="play-button-container play-button-grid" aria-label="Play Video 4">
+                            <svg class="play-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M8 5v14l11-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Existing modal JS
+            const modalTriggers = document.querySelectorAll('.modal-trigger');
+            const videoModal = document.getElementById('videoModal');
+            const closeModalButton = document.getElementById('closeModalButton');
+            const modalIframe = document.getElementById('modalVideoIframe');
+
+            if (videoModal && closeModalButton && modalIframe) {
+                modalTriggers.forEach(trigger => {
+                    trigger.addEventListener('click', function() {
+                        const videoId = this.getAttribute('data-video-id');
+                        if (videoId) {
+                            modalIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&showinfo=0&modestbranding=1&controls=1`;
+                            videoModal.style.display = 'flex';
+                            document.body.style.overflow = 'hidden'; // Prevent body scroll when modal is open
+                        }
+                    });
+                });
+
+                function closeModal() {
+                    videoModal.style.display = 'none';
+                    modalIframe.src = ''; // Important: Stop video from playing
+                    document.body.style.overflow = 'auto'; // Restore body scroll
+                }
+
+                closeModalButton.addEventListener('click', closeModal);
+
+                videoModal.addEventListener('click', function(event) {
+                    if (event.target === videoModal) {
+                        closeModal();
+                    }
+                });
+
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === 'Escape' && videoModal.style.display === 'flex') {
+                        closeModal();
+                    }
+                });
+            } else {
+                console.error('Modal elements not found! Check IDs: videoModal, closeModalButton, modalVideoIframe.');
+            }
+
+            // --- START: COPIED HEADER JAVASCRIPT from index.html ---
+            const menuToggle = document.getElementById('menu-toggle');
+            const menu = document.querySelector('header .menu');
+            const menuLinks = document.querySelectorAll('header .menu a');
+
+            if (menuToggle && menu) {
+                menuToggle.addEventListener('click', () => {
+                    menu.classList.toggle('active');
+                    menuToggle.classList.toggle('active');
+                });
+            } else {
+                console.error("Menu toggle or menu element not found for projeto_inovamed page.");
+            }
+
+            if (menuLinks && menu && menuToggle) { 
+                menuLinks.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (menu.classList.contains('active')) {
+                            menu.classList.remove('active');
+                            menuToggle.classList.remove('active');
+                        }
+                    });
+                });
+            }
+            // --- END: COPIED HEADER JAVASCRIPT ---
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VFinal Filmes</title>
+    <link rel="icon" type="image/webp" href="img/favicon.webp"> <!-- ADDED FAVICON -->
+
+    <!-- Font links (combined and de-duplicated) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- CORE STYLES --- */
+        html {
+            box-sizing: border-box; /* Apply box-sizing to html */
+        }
+        *, *:before, *:after {
+            box-sizing: inherit; /* All elements inherit from html */
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            font-size: 16px;
+            scroll-behavior: smooth;
+            background-color: #000000; /* Pure black - Default background */
+            color: #FFFFFF; /* Default text color to white */
+            width: 100%;
+            overflow-x: hidden; /* Prevent horizontal scroll, allow vertical */
+        }
+
+
+        /* --- VIDEO PRE-LOADING STYLES --- */
+        #about,
+        #portfolio,
+        .campaign-section:not(#portfolio),
+        .banner-section,
+        .separator-line,
+        .contact-section-container {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.7s ease-in-out 0.2s, visibility 0s linear 0.9s;
+        }
+
+        body.video-ready #about,
+        body.video-ready #portfolio,
+        body.video-ready .campaign-section:not(#portfolio),
+        body.video-ready .banner-section,
+        body.video-ready .separator-line,
+        body.video-ready .contact-section-container {
+            opacity: 1;
+            visibility: visible;
+        }
+
+
+        /* --- VIDEO SECTION STYLES --- */
+        .video-section {
+            position: relative;
+            width: 100%;
+            height: 100vh; /* Full viewport height by default */
+            overflow: hidden;
+            background-color: #000000;
+            /* box-sizing: border-box; is inherited */
+        }
+
+        .video-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0; /* Initially transparent for fade-in */
+            transition: opacity 1s ease-in-out; /* Fade-in transition */
+        }
+
+        .video-background.loaded { /* Class to trigger video fade-in */
+            opacity: 1;
+        }
+
+        /* --- VIDEO LOADER STYLES --- */
+        #video-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #video-loader img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        /* --- HEADER STYLES (TOP BAR) --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 12px; /* Desktop header padding */
+            /* box-sizing: border-box; is inherited */
+            z-index: 4;
+            pointer-events: all;
+            background-color: rgba(0, 0, 0, 1.0); /* Black */
+        }
+
+        .logo-link {
+            display: block;
+            line-height: 0;
+        }
+
+        .logo {
+            max-height: 30px; /* Desktop logo height */
+            width: auto;
+            display: block;
+        }
+
+        .menu {
+            display: flex;
+            gap: 22px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu a {
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 11px 13px;
+            font-size: 1.05em;
+            transition: background-color 0.8s, border-radius 0.3s;
+        }
+
+        .menu a:hover {
+            background-color: #555;
+            color: #FFFFFF;
+            border-radius: 10px;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        .menu-toggle div {
+            width: 28px;
+            height: 3.5px;
+            background-color: #FFFFFF;
+            margin: 4.5px 0;
+            transition: transform 0.5s, opacity 0.5s;
+        }
+
+        /* --- BOTTOM BAR STYLES --- */
+        .bottom-bar {
+            position: absolute; /* Default for desktop, will be overridden for mobile */
+            bottom: 20px;
+            right: 20px;
+            z-index: 2; /* Default for desktop */
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #sound-toggle-icon {
+            height: 25px; /* Desktop size */
+            width: auto;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        #volume-slider {
+            display: none;
+            width: 100px;
+            height: 8px;
+            cursor: pointer;
+            background: #555;
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+        #volume-slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 18px;
+          height: 18px;
+          background: #ddd;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+        #volume-slider::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          background: #ddd;
+          border-radius: 50%;
+          border: none;
+          cursor: pointer;
+        }
+        #volume-slider.visible {
+            display: inline-block;
+        }
+
+        /* --- CONTENT WRAPPER (OVER VIDEO) --- */
+        .content-wrapper {
+             position: relative;
+             z-index: 1;
+             height: 100%;
+             /* padding-top will be set by media queries if needed */
+             padding-bottom: 20px;
+             /* box-sizing: border-box; is inherited */
+             color: #FFFFFF;
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             text-align: center;
+             pointer-events: none;
+        }
+         .content-wrapper > * {
+             pointer-events: auto;
+         }
+
+        /* --- IMAGE SECTION STYLES (ABOUT) --- */
+        .image-section {
+            width: 100%;
+            max-width: 1920px;
+            height: auto;
+            aspect-ratio: 1920 / 720; /* For desktop */
+            background-image: url('img/bgmosaic2.webp');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .text-overlay {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            height: 100%;
+            width: 75%;
+            max-width: 48%;
+            padding: clamp(10px, 3vw, 40px) clamp(15px, 4vw, 60px);
+            /* box-sizing: border-box; is inherited */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            text-align: left;
+            color: white;
+            overflow-wrap: normal;
+            word-break: normal;
+            hyphens: none;
+            overflow-y: auto;
+        }
+
+        .text-overlay h2 {
+            font-size: clamp(1.6em, 2.5vw + 0.5em, 4.5em);
+            margin: 0 0 0.4em 0;
+            line-height: 1.1;
+            font-weight: bold;
+            max-width: 100%;
+        }
+        .text-overlay h2 .subtitle {
+            font-size: 0.4em;
+            font-weight: 500;
+            display: block;
+            margin-bottom: -0.05em;
+            letter-spacing: 0.03em;
+            max-width: 100%;
+        }
+        .text-overlay p {
+            font-size: clamp(0.9em, 1.2vw + 0.3em, 1.9em);
+            line-height: 1.45;
+            margin-bottom: 0.8em;
+            max-width: 100%;
+        }
+        .text-overlay p:last-of-type {
+            margin-bottom: 0;
+        }
+
+        /* --- RESPONSIVE STYLES --- */
+         @media (min-width: 769px) {
+             .text-overlay {
+                  width: 60%;
+                  align-items: flex-start;
+                  text-align: left;
+                  left: auto;
+                  transform: none;
+                  right: 0;
+             }
+             .image-section {
+                overflow: hidden;
+             }
+             /* No specific padding-top for .content-wrapper on desktop by default,
+                unless content is meant to be offset from video top */
+         }
+         @media (min-width: 1024px) {
+             .text-overlay {
+                 width: 50%;
+             }
+         }
+         @media (min-width: 1400px) {
+             .text-overlay {
+                  width: 48%;
+             }
+         }
+
+        @media (max-width: 768px) {
+            /* --- MOBILE BODY PADDING FOR FIXED HEADER --- */
+            body {
+                padding-top: 61px; /* Approx mobile header height (18+25+18). Pushes all content down. */
+            }
+
+            header {
+                 padding: 18px 10px; /* Mobile header padding */
+            }
+            .logo {
+                 max-height: 25px; /* Mobile logo height */
+            }
+            .menu {
+                background-color: #000000;
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                padding-top: 10px;
+                padding-bottom: 15px;
+                align-items: center;
+                z-index: 3;
+            }
+            .menu a {
+                 padding: 14px;
+                 width: 80%;
+                 text-align: center;
+                 color: #FFFFFF;
+            }
+            .menu a:hover {
+                 background-color: #555;
+            }
+            .menu-toggle {
+                display: flex;
+            }
+            .menu.active {
+                display: flex;
+            }
+            .menu-toggle.active div:nth-child(1) {
+                 transform: rotate(45deg) translate(7px, 7px);
+            }
+            .menu-toggle.active div:nth-child(2) {
+                opacity: 0;
+            }
+            .menu-toggle.active div:nth-child(3) {
+                 transform: rotate(-45deg) translate(7px, -7px);
+            }
+
+            /* --- MOBILE VIDEO SECTION --- */
+            .video-section {
+                /* No padding-top needed here as body handles the offset */
+                height: calc(100vh - 61px); /* Fill remaining viewport height after body's top padding */
+            }
+            .video-background { /* Mobile specific adjustments */
+                top: 0; /* Align to the top of .video-section */
+                left: 50%;
+                transform: translate(-50%, 0);
+                object-position: center top;
+                /* width and height 100% inherited, opacity and transition inherited */
+            }
+            .content-wrapper {
+                padding-top: 0; /* No extra padding inside video section for content overlay */
+            }
+
+            /* --- MOBILE BOTTOM BAR (SOUND BUTTON FAB) --- */
+            .bottom-bar {
+                position: fixed; /* Changed to fixed for FAB behavior */
+                bottom: 20px;    /* FAB placement */
+                right: 20px;     /* FAB placement */
+                padding: 6px;    /* Original mobile padding */
+                gap: 8px;        /* Original mobile gap */
+                z-index: 500;    /* Ensure it's above most content, below modals */
+                /* background-color: rgba(50,50,50,0.7); /* Optional: give it a slight background */
+                /* border-radius: 8px; /* Optional: round corners if it has a background */
+                
+                /* Transitions for smooth hide/show */
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                visibility: visible;
+                transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+            }
+
+            .bottom-bar.fab-hidden {
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(calc(100% + 30px)) scale(0.7); /* Move it down and shrink */
+                pointer-events: none; /* Important for elements hidden with opacity */
+                transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+            }
+
+            #sound-toggle-icon {
+                 height: 22px; /* Slightly adjusted for FAB feel */
+                 width: 22px;
+            }
+            #volume-slider {
+                width: 80px;
+                height: 6px;
+            }
+            #volume-slider::-webkit-slider-thumb {
+                width: 16px;
+                height: 16px;
+            }
+            #volume-slider::-moz-range-thumb {
+                width: 16px;
+                height: 16px;
+            }
+
+            /* --- MOBILE "ABOUT" SECTION --- */
+            .image-section {
+                 background-image: url('img/bgmosaic4.webp');
+                 aspect-ratio: unset;
+                 height: auto;
+                 min-height: 60vw;
+                 padding-top: 40px;
+                 padding-bottom: 40px;
+                 overflow: visible;
+             }
+            .text-overlay {
+                position: relative;
+                top: auto; right: auto; bottom: auto; left: auto;
+                transform: none;
+                width: 85%;
+                max-width: none;
+                margin-left: auto;
+                margin-right: auto;
+                height: auto;
+                align-items: center;
+                text-align: center;
+                padding: clamp(20px, 5vh, 50px) clamp(15px, 4vw, 30px);
+                overflow-y: visible;
+            }
+             .text-overlay h2 {
+                 font-size: clamp(2.2em, 7vw + 0.5em, 5em);
+                 line-height: 1.1;
+                 margin: 0 0 0.5em 0;
+             }
+             .text-overlay h2 .subtitle {
+                 font-size: clamp(0.3em, 2.2vw + 0.1em, 0.4em);
+                 font-weight: 400;
+                 letter-spacing: 0.08em;
+                 margin-bottom: 0.1em;
+             }
+             .text-overlay p {
+                 font-size: clamp(1em, 3vw + 0.2em, 1.8em);
+                 line-height: 1.45;
+                 margin-bottom: 1em;
+             }
+             .text-overlay p:last-of-type {
+                 margin-bottom: 0;
+             }
+        }
+
+        /* --- PORTFOLIO SECTION STYLES --- */
+        .campaign-section {
+            width: 100%;
+            min-height: 70vh;
+            padding: 80px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            position: relative;
+            background-color: #0a0a0a;
+        }
+        .vr-campaign { background-image: url('img/bgvr1.webp'); }
+        .astronaut-campaign { background-image: url('img/bgastronaut1.webp'); }
+        .music-campaign { background-image: url('img/bgmusic1.webp'); }
+
+        .campaign-section .content-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1300px;
+            gap: 40px;
+            /* box-sizing: border-box; is inherited */
+        }
+        .campaign-section .image-content { text-align: center; }
+        .campaign-section .image-content.desktop-image { display: block; }
+        .campaign-section .mobile-image { display: none; }
+
+        .thumbnail-image {
+            max-width: 100%; height: auto; display: block;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+            margin: 0 auto;
+        }
+        .campaign-section .text-content { text-align: left; /* box-sizing: border-box; */ color: #f0f0f0; }
+        .campaign-section .text-content .subtitle {
+            font-size: clamp(0.9em, 1.2vw + 0.2em, 1.3em);
+            font-weight: 400; color: #d0d0d0;
+            margin-bottom: 0.4em; letter-spacing: 0.04em;
+        }
+        .campaign-section .text-content h2 {
+            font-size: clamp(2em, 3.5vw + 0.3em, 3.8em);
+            font-weight: bold; margin-top: 0; margin-bottom: 0.7em;
+            line-height: 1.1; color: #ffffff;
+        }
+        .campaign-section .text-content p {
+            font-size: clamp(1em, 1.5vw + 0.1em, 1.3em);
+            line-height: 1.65; margin-bottom: 2em;
+            color: #e8e8e8; max-width: 550px;
+        }
+        .campaign-section .cta-link {
+            display: inline-block; color: #ffffff;
+            text-decoration: none; font-weight: 500;
+            font-size: clamp(0.9em, 1.1vw + 0.1em, 1.15em);
+            padding-bottom: 6px; border-bottom: 2.5px solid #ffffff;
+            transition: opacity 0.3s ease; margin-top: 15px;
+        }
+        .campaign-section .cta-link:hover { opacity: 0.8; }
+
+        /* Portfolio Layout Variations (Desktop) */
+        .vr-campaign .content-container .image-content.desktop-image { flex-basis: 55%; order: 1; }
+        .vr-campaign .content-container .text-content { flex-basis: 40%; order: 2; padding-left: 20px; }
+        .astronaut-campaign .content-container .text-content { flex-basis: 40%; order: 1; padding-right: 20px;}
+        .astronaut-campaign .content-container .image-content.desktop-image { flex-basis: 55%; order: 2; }
+        .music-campaign .content-container .text-content { flex-basis: 40%; order: 1; padding-right: 20px;}
+        .music-campaign .content-container .image-content.desktop-image { flex-basis: 55%; order: 2; }
+
+        /* Responsive Adjustments (Portfolio Sections - Mobile) */
+        @media (max-width: 850px) {
+            .campaign-section { padding: 50px 0; min-height: unset; }
+            .campaign-section .content-container { flex-direction: column; width: 100%; padding: 0 10%; gap: 0; }
+            .campaign-section .image-content.desktop-image { display: none; }
+            .campaign-section .mobile-image { display: block; text-align: center; width: 100%; margin-top: 1em; margin-bottom: 1.2em; }
+            .campaign-section .text-content { flex-basis: 100%; padding-left: 5%; padding-right: 5%; order: 1 !important; display: flex; flex-direction: column; align-items: flex-start; text-align: left; width: 100%; margin-top: 0; }
+            .campaign-section .text-content h2 { font-size: clamp(2em, 7vw, 3em); margin-bottom: 0.4em; }
+            .campaign-section .text-content .subtitle { font-size: clamp(0.9em, 3vw, 1.1em); margin-bottom: 0.3em; }
+            .campaign-section .text-content p { font-size: clamp(1.0em, 4vw, 1.2em); line-height: 1.6; margin-bottom: 0; }
+            .campaign-section .cta-link { font-size: clamp(0.9em, 3.5vw, 1.1em); margin-top: 1.2em; }
+        }
+         @media (max-width: 480px) {
+             .campaign-section .content-container { padding: 0 8%; }
+             .campaign-section .text-content { padding-left: 4%; padding-right: 4%; }
+             .campaign-section .mobile-image { margin-top: 0.8em; margin-bottom: 1em; }
+             .campaign-section .cta-link { margin-top: 1em; }
+         }
+
+        /* --- EXPANDABLE BANNER SECTION STYLES --- */
+        .separator-line { width: 100%; height: 20px; background-color: #000000; }
+        .banner-section {
+            width: 100%; margin: 0 auto; position: relative;
+            overflow: hidden; background-color: #111;
+            font-family: 'Montserrat', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+            height: 150px;
+            transition: height 2s ease-in-out;
+        }
+        .banner-section:not(.expanded) {
+             cursor: pointer;
+        }
+        .banner-section::before {
+            content: ""; position: absolute; inset: 0;
+            background-size: cover; background-position: center;
+            background-repeat: no-repeat; z-index: 0;
+        }
+        .events-banner::before { background-image: url('img/eventbg1.webp'); }
+        .corp-anim-banner::before { background-image: url('img/corporate1.webp'); }
+
+        .banner-section.expanded {
+            height: 700px;
+            cursor: default;
+        }
+        .banner-text {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2; color: #ffffff; text-align: center;
+            font-family: 'Montserrat', sans-serif; font-weight: 700;
+            font-size: clamp(2em, 5vw, 3.5em);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+            white-space: nowrap; margin: 0; padding: 0;
+            pointer-events: none;
+            opacity: 1; visibility: visible;
+            transition: opacity 1s ease-in-out 0s, visibility 0s linear 1s;
+        }
+        .banner-section.expanded .banner-text {
+             opacity: 0; visibility: hidden;
+        }
+        .banner-section .expanded-content {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 90%; max-width: 1300px; gap: 40px;
+            /* box-sizing: border-box; */ position: relative; z-index: 1;
+             opacity: 0; visibility: hidden;
+             transition: opacity 1s ease-in-out 0.5s, visibility 0s linear 0.5s;
+             color: #f0f0f0;
+        }
+        .banner-section.expanded .expanded-content {
+             opacity: 1; visibility: visible;
+        }
+        .banner-section.expanded .expanded-content .text-content {
+             flex-basis: 40%; order: 1; padding-right: 20px;
+             font-family: 'Montserrat', sans-serif;
+        }
+         .banner-section.expanded .expanded-content .text-content h2 {
+             font-weight: 700; font-size: clamp(1.8em, 3vw + 0.3em, 3.2em);
+             color: #ffffff;
+         }
+          .banner-section.expanded .expanded-content .text-content p {
+             font-weight: 400; font-size: clamp(0.9em, 1.3vw + 0.1em, 1.1em);
+             color: #e8e8e8;
+          }
+         .banner-section.expanded .expanded-content .text-content .cta-link {
+             font-weight: 700; font-size: clamp(0.85em, 1vw + 0.1em, 1.0em);
+             border-bottom-width: 2px; color: #ffffff; border-bottom-color: #ffffff;
+         }
+        .banner-section.expanded .expanded-content .image-content.desktop-image {
+             flex-basis: 55%; order: 2;
+        }
+         .banner-section.expanded .expanded-content .mobile-image {
+             display: none;
+         }
+        .banner-section.expanded .expanded-content .text-content .mobile-image {
+              display: none;
+          }
+        .banner-section.expanded .events-interactive-thumbnail,
+        .banner-section.expanded .corp-anim-interactive-thumbnail {
+            cursor: pointer;
+        }
+
+        @media (max-width: 850px) { /* Banner responsive */
+            .banner-section { height: 150px; transition: height 2s ease-in-out; }
+            .banner-section.expanded { height: 700px; }
+            .banner-section.expanded .expanded-content { flex-direction: column; width: 100%; padding: 0 10%; gap: 10px; transition: opacity 1s ease-in-out 0.5s, visibility 0s linear 0.5s; }
+            .banner-section.expanded .expanded-content .text-content { flex-basis: auto; width: 100%; padding: 0 5%; order: 2; text-align: left; align-items: flex-start; }
+            .banner-section.expanded .expanded-content .image-content.desktop-image { display: none; }
+
+            .banner-section.expanded .expanded-content .text-content .mobile-image.events-interactive-thumbnail,
+            .banner-section.expanded .expanded-content .text-content .mobile-image.corp-anim-interactive-thumbnail {
+                  display: block; text-align: center; width: 100%;
+                  margin: 0 auto 1.5em auto; order: -1;
+            }
+             .banner-section.expanded .expanded-content .events-interactive-thumbnail.desktop-image,
+             .banner-section.expanded .expanded-content .corp-anim-interactive-thumbnail.desktop-image {
+                 display: none;
+             }
+
+            .banner-text { font-size: clamp(1.8em, 6vw, 2.8em); }
+            .banner-section.expanded .expanded-content .text-content h2 { font-size: clamp(1.6em, 6vw, 2.5em); }
+            .banner-section.expanded .expanded-content .text-content p { font-size: clamp(0.9em, 3.5vw, 1.0em); }
+            .banner-section.expanded .expanded-content .cta-link { font-size: clamp(0.8em, 3vw, 0.95em); }
+        }
+        @media (max-width: 480px) { /* Banner further responsive */
+            .banner-section { height: 150px; }
+            .banner-section.expanded { height: 700px; }
+            .banner-section.expanded .expanded-content { padding: 0 8%; }
+            .banner-text { font-size: clamp(1.5em, 7vw, 2.2em); }
+        }
+
+        /* --- INTERACTIVE THUMBNAIL STYLES --- */
+        .astronaut-interactive-container,
+        .vr-interactive-container,
+        .music-interactive-container {
+            position: relative;
+            cursor: pointer;
+        }
+        .astronaut-static-thumb, .vr-static-thumb, .music-static-thumb {
+            display: block;
+        }
+        .astronaut-animated-thumb,
+        .vr-animated-thumb,
+        .music-animated-thumb {
+            max-width: 100%;
+            height: auto;
+            display: none;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.35);
+            margin: 0 auto;
+        }
+
+        /* --- YOUTUBE LIGHTBOX STYLES --- */
+        .youtube-lightbox-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+            padding: 20px; /* box-sizing: border-box; */
+        }
+        .youtube-lightbox-content {
+            position: relative; background-color: #000; padding: 0;
+            border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 90vw; max-width: 960px; aspect-ratio: 16 / 9;
+        }
+        .youtube-lightbox-content iframe {
+            width: 100%; height: 100%; border: none; border-radius: 8px;
+        }
+        .youtube-lightbox-close {
+            position: absolute; top: -35px; right: -5px; color: #fff;
+            font-size: 35px; font-weight: bold; cursor: pointer;
+            line-height: 1; padding: 5px;
+        }
+        .youtube-lightbox-close:hover { color: #ccc; }
+        @media (max-width: 600px) {
+            .youtube-lightbox-close { top: -30px; right: 0px; font-size: 30px; }
+            .youtube-lightbox-content { width: 95vw; }
+        }
+
+        /* --- CONTACT SECTION STYLES --- */
+        .contact-section-container {
+            display: flex;
+            min-height: 80vh;
+            width: 100%;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .contact-section-container .left-panel {
+            background-color: #000000;
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5%;
+            /* box-sizing: border-box; */
+        }
+        .contact-section-container .logo-v-image {
+            max-width: 65%;
+            max-height: 65%;
+            width: auto;
+            height: auto;
+        }
+        .contact-section-container .right-panel {
+            background-color: #ffffff;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 5%;
+            /* box-sizing: border-box; */
+            color: #333333;
+        }
+        .contact-section-container .contact-header {
+            margin-bottom: 40px;
+        }
+        .contact-section-container .entre-em {
+            font-size: 1em;
+            color: #333333;
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+        }
+        .contact-section-container .entre-em-line {
+            height: 2px;
+            width: 30px;
+            background-color: #333333;
+            margin-left: 10px;
+        }
+        .contact-section-container .contato-title {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #000000;
+            margin-top: 5px;
+            letter-spacing: -0.02em;
+        }
+        .contact-section-container .contact-info {
+            font-size: 1em;
+        }
+        .contact-section-container .contact-info p {
+            margin: 15px 0 5px 0;
+            font-weight: 700;
+            color: #555555;
+        }
+        .contact-section-container .contact-info a {
+            color: #777777;
+            text-decoration: none;
+            display: inline-block;
+            padding-bottom: 2px;
+            border-bottom: 1px solid #cccccc;
+            transition: color 0.3s ease, border-color 0.3s ease;
+            font-weight: 400;
+        }
+        .contact-section-container .contact-info a:hover {
+            color: #000000;
+            border-bottom-color: #000000;
+        }
+
+        /* Responsive adjustments for Contact Section */
+        @media (max-width: 768px) {
+            .contact-section-container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+            .contact-section-container .left-panel, .contact-section-container .right-panel {
+                width: 100%;
+                /* box-sizing: border-box; */
+            }
+            .contact-section-container .right-panel {
+                order: 1;
+                height: auto;
+                padding: 50px 10% 30px 10%;
+                justify-content: center;
+            }
+            .contact-section-container .left-panel {
+                order: 2;
+                height: auto;
+                flex-grow: 1;
+                padding: 5% 10%;
+            }
+            .contact-section-container .logo-v-image {
+                max-width: 50%;
+                max-height: 200px;
+            }
+            .contact-section-container .contato-title {
+                font-size: 2.5em;
+            }
+            .contact-section-container .entre-em {
+                font-size: 0.9em;
+            }
+            .contact-section-container .contact-info {
+                font-size: 0.9em;
+            }
+        }
+
+         @media (max-width: 480px) { /* Contact Section further responsive */
+            .contact-section-container .right-panel {
+                 padding: 40px 10% 25px 10%;
+            }
+            .contact-section-container .left-panel {
+                 padding: 8% 10%;
+            }
+            .contact-section-container .logo-v-image {
+                max-width: 45%;
+                max-height: 150px;
+            }
+             .contact-section-container .contato-title {
+                font-size: 2em;
+            }
+            .contact-section-container .entre-em {
+                font-size: 0.8em;
+            }
+            .contact-section-container .contact-info {
+                font-size: 0.8em;
+            }
+         }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="#home" class="logo-link"> <!-- ADDED LINK WRAPPER -->
+            <img src="img/logo.webp" alt="VFinal Filmes Logo" class="logo">
+        </a>
+        <nav class="menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">Sobre</a></li>
+            <li><a href="#portfolio">Portfólio</a></li>
+            <li><a href="#contato">Contato</a></li>
+        </nav>
+        <div class="menu-toggle" id="menu-toggle">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </header>
+
+    <!-- Section 1: Video Section -->
+    <div class="video-section" id="home">
+        <div id="video-loader">
+            <img src="img/Logo-loader.gif" alt="Loading video...">
+        </div>
+        <video id="bg-video" autoplay muted loop playsinline class="video-background">
+            <source src="img/vendas.webm" type="video/webm">
+            Your browser does not support the video tag.
+        </video>
+        <div class="content-wrapper">
+            <!-- Optional Content Here -->
+        </div>
+        <div class="bottom-bar">
+             <img id="sound-toggle-icon" src="img/sound-off.webp" alt="Unmute Sound">
+             <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+    </div>
+
+    <!-- Section 2: Image Section (About) -->
+    <div class="image-section" id="about">
+        <div class="text-overlay">
+            <h2><span class="subtitle">SOBRE A</span>VFINAL Filmes</h2>
+            <p>
+                A VFinal é uma produtora audiovisual que transforma ideias em realidade.
+                Somos obcecados por fazer um produto refinado com agilidade com ajuda de tecnologias de ponta como animação 3D e Inteligência Artificial.
+            </p>
+            <p>
+                Venha chegar na sua versão final.
+            </p>
+        </div>
+    </div>
+
+    <!-- Section 3: Portfolio Content -->
+    <!-- Astronaut Section -->
+    <div class="campaign-section astronaut-campaign" id="portfolio">
+        <div class="content-container">
+             <div class="text-content">
+                 <h4 class="subtitle">Campanha</h4>
+                 <h2>MIDDAS Cachaça</h2>
+                 <div class="mobile-image astronaut-interactive-container">
+                     <img src="img/thumbastronaut1.webp" alt="Astronaut looking sideways" class="thumbnail-image astronaut-static-thumb">
+                     <video class="astronaut-animated-thumb" loop muted playsinline>
+                        <source src="img/astronautathumbanim.webm" type="video/webm">
+                        Your browser does not support the video tag.
+                     </video>
+                 </div>
+                 <p>
+                     Essa campanha para a marca Middas mostrou como a cachaça pode ser uma bebida premium. Com a utilização da animação 3D exploramos o tema da conquista para refletir a exclusividade do produto com flocos de ouro.
+                 </p>
+                 <a href="campanha_middas.html" class="cta-link">saiba mais</a>
+             </div>
+            <div class="image-content desktop-image astronaut-interactive-container">
+                <img src="img/thumbastronaut1.webp" alt="Astronaut looking sideways" class="thumbnail-image astronaut-static-thumb">
+                <video class="astronaut-animated-thumb" loop muted playsinline>
+                    <source src="img/astronautathumbanim.webm" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- VR Section -->
+    <div class="campaign-section vr-campaign" id="vr-campaign-section">
+        <div class="content-container">
+            <div class="image-content desktop-image vr-interactive-container">
+                <img src="img/thumbvr1.webp" alt="VR Experience Thumbnail" class="thumbnail-image vr-static-thumb">
+                <video class="vr-animated-thumb" loop muted playsinline>
+                    <source src="img/vrthumbanim.webm" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="text-content">
+                <h4 class="subtitle">Projeto</h4>
+                <h2>Innovamed Experience</h2>
+                <div class="mobile-image vr-interactive-container">
+                    <img src="img/thumbvr1.webp" alt="VR Experience Thumbnail" class="thumbnail-image vr-static-thumb">
+                    <video class="vr-animated-thumb" loop muted playsinline>
+                        <source src="img/vrthumbanim.webm" type="video/webm">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <p>
+                    Com vídeos gravados no no hospital InCor, mostramos como o projeto levou a tecnologia da Realidade Virtual para mostrar aos pacientes como é o funcionamento do coração humano.
+                </p>
+                <a href="projeto_inovamed.html" class="cta-link">saiba mais</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Section -->
+    <div class="campaign-section music-campaign" id="music-campaign-section">
+        <div class="content-container">
+             <div class="text-content">
+                 <h4 class="subtitle">Música</h4>
+                 <h2>Video Clipes</h2>
+                 <div class="mobile-image music-interactive-container">
+                     <img src="img/thumbmusic1.webp" alt="Music Video Thumbnail" class="thumbnail-image music-static-thumb">
+                     <video class="music-animated-thumb" loop muted playsinline>
+                        <source src="img/clipethumbanim.webm" type="video/webm">
+                        Your browser does not support the video tag.
+                     </video>
+                 </div>
+                 <p>
+                     A VFinal já trabalhou com bandas de diversos gêneros músicais trazendo a visão do artista para a realidade.
+                 </p>
+                 <a href="video_clipes.html" class="cta-link">saiba mais</a>
+             </div>
+            <div class="image-content desktop-image music-interactive-container">
+                <img src="img/thumbmusic1.webp" alt="Music Video Thumbnail" class="thumbnail-image music-static-thumb">
+                <video class="music-animated-thumb" loop muted playsinline>
+                    <source src="img/clipethumbanim.webm" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Separator Line -->
+    <div class="separator-line"></div>
+
+    <!-- Events Banner Section (Expandable) -->
+    <div class="banner-section events-banner" id="events-banner">
+        <p class="banner-text">Cobertura de Eventos</p>
+        <div class="expanded-content">
+             <div class="text-content">
+                 <h4 class="subtitle">Serviço</h4>
+                 <h2>Cobertura de Eventos</h2>
+                 <div class="mobile-image events-interactive-thumbnail">
+                     <img src="img/palestra1.webp" alt="Cobertura de Eventos Palestra" class="thumbnail-image">
+                 </div>
+                 <p>
+                     Registramos os melhores momentos do seu evento corporativo, feira ou celebração com qualidade cinematográfica.
+                 </p>
+             </div>
+            <div class="image-content desktop-image events-interactive-thumbnail">
+                <img src="img/palestra1.webp" alt="Cobertura de Eventos Palestra" class="thumbnail-image">
+            </div>
+        </div>
+    </div>
+
+    <!-- Separator Line -->
+    <div class="separator-line"></div>
+
+    <!-- Corporate Animation Banner Section -->
+    <div class="banner-section corp-anim-banner" id="corp-anim-banner-section">
+        <p class="banner-text">Animação Corporativa</p>
+        <div class="expanded-content">
+             <div class="text-content">
+                 <h4 class="subtitle">Soluções Visuais</h4>
+                 <h2>Animação Corporativa</h2>
+                 <div class="mobile-image corp-anim-interactive-thumbnail">
+                     <img src="img/corporatethumb.webp" alt="Animação Corporativa Thumbnail" class="thumbnail-image">
+                 </div>
+                 <p>
+                    Transformamos ideias complexas em animações claras e envolventes para sua empresa. Ideal para marketing, treinamento e comunicação interna.
+                 </p>
+             </div>
+            <div class="image-content desktop-image corp-anim-interactive-thumbnail">
+                <img src="img/corporatethumb.webp" alt="Animação Corporativa Thumbnail" class="thumbnail-image">
+            </div>
+        </div>
+    </div>
+
+    <!-- Separator Line -->
+    <div class="separator-line"></div>
+
+    <!-- YouTube Lightbox Structure -->
+    <div id="youtube-lightbox" class="youtube-lightbox-overlay" style="display: none;">
+        <div class="youtube-lightbox-content">
+            <span class="youtube-lightbox-close" id="youtube-lightbox-close-btn">×</span>
+            <iframe id="youtube-iframe" width="560" height="315" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Section 4: Contact Section -->
+    <div class="contact-section-container" id="contato">
+        <div class="left-panel">
+            <img src="img/contact-bg.webp" alt="V Logo" class="logo-v-image">
+        </div>
+        <div class="right-panel">
+            <div class="contact-header">
+                <div class="entre-em">
+                    ENTRE EM <span class="entre-em-line"></span>
+                </div>
+                <div class="contato-title">CONTATO</div>
+            </div>
+            <div class="contact-info">
+                <p>Whatsapp:</p>
+                <a href="https://wa.me/5511987505555" target="_blank">+55 11 98750-5555</a>
+            </div>
+            <div class="contact-info">
+                <p>Email:</p>
+                <a href="mailto:vfinalfilmes@gmail.com">vfinalfilmes@gmail.com</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menu-toggle');
+            const menu = document.querySelector('header .menu');
+            const menuLinks = document.querySelectorAll('header .menu a');
+            const video = document.getElementById('bg-video');
+            const soundIcon = document.getElementById('sound-toggle-icon');
+            const volumeSlider = document.getElementById('volume-slider');
+            const sourceElement = video ? video.querySelector('source') : null;
+            const videoLoader = document.getElementById('video-loader');
+
+            // Configuration for video section
+            const desktopVideoSrc = 'img/vendas.webm';
+            const mobileVideoSrc = 'img/vendasmobile.webm';
+            const soundOnIconSrc = 'img/sound-on.webp';
+            const soundOffIconSrc = 'img/sound-off.webp';
+            const mobileBreakpoint = 768; // Used for video source switching
+            let resizeTimer;
+            let videoLoadTimeoutIdGlobal = null;
+
+            // Function to show site content and clear video timeout
+            const showSiteContent = () => {
+                if (videoLoader) videoLoader.style.display = 'none';
+                document.body.classList.add('video-ready');
+                if (videoLoadTimeoutIdGlobal) {
+                    clearTimeout(videoLoadTimeoutIdGlobal);
+                    videoLoadTimeoutIdGlobal = null;
+                }
+            };
+
+            // Fallback if video takes too long to load
+            const handleVideoLoadTimeout = () => {
+                console.warn("Video loading timed out. Showing site content.");
+                showSiteContent();
+                if (video) { // Attempt to show video if it exists
+                    video.classList.add('loaded');
+                }
+                if (video && video.readyState >= 3 && soundIcon && volumeSlider) {
+                    if (video.muted) {
+                        soundIcon.src = soundOffIconSrc; soundIcon.alt = "Unmute Sound";
+                        volumeSlider.classList.remove('visible'); volumeSlider.value = 0;
+                    } else {
+                        soundIcon.src = soundOnIconSrc; soundIcon.alt = "Mute Sound";
+                        volumeSlider.value = video.volume; volumeSlider.classList.add('visible');
+                    }
+                }
+            };
+
+            // Called when video can play
+            const onVideoCanPlay = () => {
+                showSiteContent();
+                if (!video) return;
+
+                video.classList.add('loaded'); // Add class to trigger video fade-in
+
+                if (soundIcon && volumeSlider) {
+                    if (video.muted) {
+                       soundIcon.src = soundOffIconSrc; soundIcon.alt = "Unmute Sound";
+                       volumeSlider.classList.remove('visible'); volumeSlider.value = 0;
+                    } else {
+                       soundIcon.src = soundOnIconSrc; soundIcon.alt = "Mute Sound";
+                       if (video.volume === 1 && volumeSlider.value === "0.5") {
+                            video.volume = 0.5;
+                       }
+                       volumeSlider.value = video.volume;
+                       volumeSlider.classList.add('visible');
+                    }
+                }
+                if (video.hasAttribute('autoplay') && video.paused) {
+                    video.play().catch(error => {
+                        console.warn("Autoplay initially prevented:", error);
+                    });
+                }
+            };
+
+            // Called on video load error
+            const onVideoLoadError = (e) => {
+                console.error("Error loading video:", video.currentSrc || "unknown source", e);
+                showSiteContent(); // Video will remain opacity: 0 due to CSS if it fails
+            };
+
+            // Video Source Handling
+            const setVideoSource = () => {
+                if (!video || !sourceElement) {
+                   console.error("Video or source element not found for source switching.");
+                   showSiteContent();
+                   if (video) video.classList.add('loaded'); // Attempt to show if somehow displayable
+                   return;
+                }
+                const screenWidth = window.innerWidth;
+                const desiredSrc = screenWidth <= mobileBreakpoint ? mobileVideoSrc : desktopVideoSrc;
+                const needsToLoadNewSource = video.currentSrc !== desiredSrc && new URL(desiredSrc, window.location.href).href !== video.currentSrc;
+
+                if (needsToLoadNewSource || !video.currentSrc) {
+                    console.log(`Setting video. Screen width: ${screenWidth}px. Source: ${desiredSrc}`);
+                    if (videoLoader) videoLoader.style.display = 'flex';
+                    if (videoLoadTimeoutIdGlobal) clearTimeout(videoLoadTimeoutIdGlobal);
+                    videoLoadTimeoutIdGlobal = setTimeout(handleVideoLoadTimeout, 8000);
+                    const wasMuted = video.muted;
+                    const currentVolume = video.volume;
+                    video.removeEventListener('canplay', onVideoCanPlay);
+                    video.removeEventListener('error', onVideoLoadError);
+                    video.addEventListener('canplay', function onCanPlayOnce() {
+                        video.removeEventListener('canplay', onCanPlayOnce);
+                        video.muted = wasMuted;
+                        video.volume = currentVolume;
+                        onVideoCanPlay();
+                    }, { once: false });
+                    video.addEventListener('error', onVideoLoadError, { once: true });
+                    sourceElement.setAttribute('src', desiredSrc);
+                    video.load();
+                } else if (video.readyState >= 3) {
+                     console.log("Video source correct and already ready. Showing content.");
+                     onVideoCanPlay();
+                } else {
+                     console.log("Video source correct, but not fully ready. Loader should be visible. Waiting for 'canplay'.");
+                     if (videoLoader && videoLoader.style.display === 'none') videoLoader.style.display = 'flex';
+                     if (!videoLoadTimeoutIdGlobal) {
+                        videoLoadTimeoutIdGlobal = setTimeout(handleVideoLoadTimeout, 8000);
+                     }
+                     video.removeEventListener('canplay', onVideoCanPlay);
+                     video.addEventListener('canplay', onVideoCanPlay, { once: true });
+                     video.removeEventListener('error', onVideoLoadError);
+                     video.addEventListener('error', onVideoLoadError, { once: true });
+                }
+            };
+
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(setVideoSource, 250);
+            });
+            setVideoSource();
+
+            // --- Menu Toggle ---
+            if (menuToggle && menu) {
+                menuToggle.addEventListener('click', () => {
+                    menu.classList.toggle('active');
+                    menuToggle.classList.toggle('active');
+                });
+            } else { console.error("Menu toggle or menu element not found"); }
+
+            // --- Close menu on link click ---
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                     if (menu && menu.classList.contains('active')) {
+                        menu.classList.remove('active');
+                         if(menuToggle) menuToggle.classList.remove('active');
+                     }
+                });
+            });
+
+            // --- Sound Toggle ---
+            if (soundIcon && video && volumeSlider) {
+                soundIcon.addEventListener('click', () => {
+                    video.muted = !video.muted;
+                    if (video.muted) {
+                        soundIcon.src = soundOffIconSrc;
+                        soundIcon.alt = "Unmute Sound";
+                        volumeSlider.classList.remove('visible');
+                    } else {
+                        if (video.volume === 0 || video.volume === 1) {
+                            video.volume = 0.5;
+                        }
+                        soundIcon.src = soundOnIconSrc;
+                        soundIcon.alt = "Mute Sound";
+                        volumeSlider.value = video.volume;
+                        volumeSlider.classList.add('visible');
+                    }
+                });
+            } else {
+                console.error("Sound control elements or video not found for sound toggle.");
+            }
+
+            // --- Volume Slider Control ---
+            if (volumeSlider && video && soundIcon) {
+                volumeSlider.addEventListener('input', () => {
+                    const newVolume = parseFloat(volumeSlider.value);
+                    video.volume = newVolume;
+                    if (newVolume === 0) {
+                        if (!video.muted) {
+                            video.muted = true;
+                            soundIcon.src = soundOffIconSrc;
+                            soundIcon.alt = "Unmute Sound";
+                            volumeSlider.classList.remove('visible');
+                        }
+                    } else {
+                        if (video.muted) {
+                            video.muted = false;
+                        }
+                        soundIcon.src = soundOnIconSrc;
+                        soundIcon.alt = "Mute Sound";
+                        if (!volumeSlider.classList.contains('visible')) {
+                            volumeSlider.classList.add('visible');
+                        }
+                    }
+                });
+            } else {
+                console.error("Volume slider or related elements not found for volume control.");
+            }
+
+            // --- Initial State Setup (Sound Controls) ---
+            if (video) {
+                video.setAttribute('playsinline', '');
+            } else {
+                if (!video) console.error("Video element #bg-video not found for initial setup!");
+            }
+
+            // --- FAB-like behavior for .bottom-bar on mobile ---
+            const bottomBar = document.querySelector('.bottom-bar');
+            if (bottomBar) {
+                let lastScrollY = window.scrollY;
+                const hideThreshold = 50; // How many pixels to scroll down before hiding
+                const mobileFabBreakpoint = 768; // Same as CSS @media (max-width: 768px)
+
+                const updateFabVisibility = () => {
+                    if (window.innerWidth <= mobileFabBreakpoint) {
+                        const currentScrollY = window.scrollY;
+                        if (currentScrollY > lastScrollY && currentScrollY > hideThreshold) {
+                            bottomBar.classList.add('fab-hidden');
+                        } else if (currentScrollY < lastScrollY || currentScrollY <= 10) {
+                            bottomBar.classList.remove('fab-hidden');
+                        }
+                        lastScrollY = currentScrollY < 0 ? 0 : currentScrollY;
+                    } else {
+                        // On desktop, ensure it's always visible (not fab-hidden)
+                        bottomBar.classList.remove('fab-hidden');
+                    }
+                };
+
+                window.addEventListener('scroll', updateFabVisibility);
+                window.addEventListener('resize', () => {
+                    // Reset lastScrollY on resize to handle orientation changes or viewport size changes correctly
+                    lastScrollY = window.scrollY < 0 ? 0 : window.scrollY;
+                    updateFabVisibility(); // Re-check visibility on resize
+                });
+
+                // Initial check
+                updateFabVisibility();
+            }
+        });
+
+        // --- Script from section3_portfolio.html (Runs after DOM is parsed) ---
+        // BANNER EXPAND SCRIPT (COMMON)
+        function initializeBannerExpand(bannerElement) {
+            if (bannerElement) {
+                bannerElement.addEventListener('click', function(event) {
+                    if (event.currentTarget === event.target || event.target.classList.contains('banner-text')) {
+                        if (!event.currentTarget.classList.contains('expanded')) {
+                            event.currentTarget.classList.add('expanded');
+                        }
+                    }
+                });
+            }
+        }
+
+        const eventBanner = document.getElementById('events-banner');
+        initializeBannerExpand(eventBanner);
+
+        const corpAnimBanner = document.getElementById('corp-anim-banner-section');
+        initializeBannerExpand(corpAnimBanner);
+
+        // YOUTUBE LIGHTBOX ELEMENTS & COMMON FUNCTIONS
+        const youtubeLightbox = document.getElementById('youtube-lightbox');
+        const youtubeIframe = document.getElementById('youtube-iframe');
+        const youtubeLightboxCloseBtn = document.getElementById('youtube-lightbox-close-btn');
+
+        function openYoutubeLightbox(videoId) {
+            if (youtubeLightbox && youtubeIframe) {
+                youtubeIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+                youtubeLightbox.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeYoutubeLightbox() {
+            if (youtubeLightbox && youtubeIframe) {
+                youtubeLightbox.style.display = 'none';
+                youtubeIframe.src = '';
+                document.body.style.overflow = '';
+            }
+        }
+
+        if (youtubeLightboxCloseBtn) {
+            youtubeLightboxCloseBtn.addEventListener('click', closeYoutubeLightbox);
+        }
+        if (youtubeLightbox) {
+            youtubeLightbox.addEventListener('click', function(event) {
+                if (event.target === youtubeLightbox) {
+                    closeYoutubeLightbox();
+                }
+            });
+        }
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && youtubeLightbox && youtubeLightbox.style.display === 'flex') {
+                closeYoutubeLightbox();
+            }
+        });
+
+        // INTERACTIVE THUMBNAIL HOVER & CLICK FUNCTIONALITY
+        function setupInteractiveThumbnail(containerSelector, staticThumbClass, animatedThumbClass, youtubeVideoId = null, isBannerThumbnail = false) {
+            const containers = document.querySelectorAll(containerSelector);
+            containers.forEach(container => {
+                const staticThumb = isBannerThumbnail ? container.querySelector('.thumbnail-image') : container.querySelector('.' + staticThumbClass);
+                const animatedThumb = !isBannerThumbnail ? container.querySelector('.' + animatedThumbClass) : null;
+
+                if (staticThumb) {
+                    if (animatedThumb) {
+                        container.addEventListener('mouseenter', () => {
+                            staticThumb.style.display = 'none';
+                            animatedThumb.style.display = 'block';
+                            animatedThumb.play().catch(error => console.log("Autoplay hover prevented:", error));
+                        });
+
+                        container.addEventListener('mouseleave', () => {
+                            animatedThumb.style.display = 'none';
+                            staticThumb.style.display = 'block';
+                            animatedThumb.pause();
+                            animatedThumb.currentTime = 0;
+                        });
+                    }
+
+                    if (youtubeVideoId) {
+                        container.addEventListener('click', (event) => {
+                            if (event.target.closest('.cta-link')) {
+                                return;
+                            }
+                            const parentBanner = container.closest('.banner-section');
+                            if (isBannerThumbnail && parentBanner && !parentBanner.classList.contains('expanded')) {
+                                return;
+                            }
+                            openYoutubeLightbox(youtubeVideoId);
+                        });
+                    }
+                }
+            });
+        }
+
+        // YouTube Video IDs for portfolio and banners
+        const astronautYoutubeVideoId = 'ECDtGVj_weg';
+        const vrYoutubeVideoId = 'XXJMI027q9M';
+        const musicYoutubeVideoId = 'xBRN-mnsN0o';
+        const eventsYoutubeVideoId = 'NIe-eoMTKV8';
+        const corpAnimYoutubeVideoId = '5n_vILNgqvY';
+
+        // Apply interactions to portfolio items
+        setupInteractiveThumbnail('.astronaut-interactive-container', 'astronaut-static-thumb', 'astronaut-animated-thumb', astronautYoutubeVideoId);
+        setupInteractiveThumbnail('.vr-interactive-container', 'vr-static-thumb', 'vr-animated-thumb', vrYoutubeVideoId);
+        setupInteractiveThumbnail('.music-interactive-container', 'music-static-thumb', 'music-animated-thumb', musicYoutubeVideoId);
+
+        // Apply interactions to banner thumbnails
+        setupInteractiveThumbnail('.events-interactive-thumbnail', null, null, eventsYoutubeVideoId, true);
+        setupInteractiveThumbnail('.corp-anim-interactive-thumbnail', null, null, corpAnimYoutubeVideoId, true);
+
+    </script>
+</body>
+</html>
